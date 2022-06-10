@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Post;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -14,7 +16,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+         $posts = Post::all();
+        return view("admin.index", compact("posts"));
     }
 
     /**
@@ -24,7 +27,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+         return view("admin.create");
     }
 
     /**
@@ -35,7 +38,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dati = $request->all();
+        
+        $new_post = new Post();
+            $new_post->fill($dati);
+            $new_post->slung = Str::slug($new_post->title, '-');
+            $new_post->save();
+            return redirect()->route("admin.posts.show", $new_post) ;
     }
 
     /**
@@ -46,7 +55,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view("admin.show", compact("post"));
     }
 
     /**
@@ -55,9 +65,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        
+         return view( 'admin.edit', compact('post') );
     }
 
     /**
@@ -67,9 +78,14 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $data = $request->all();
+        $post['slung'] = Str::slug( $request->title , '-');
+        $post->update($data);
+
+        
+        return redirect()->route( 'admin.posts.show', $post );
     }
 
     /**
@@ -78,8 +94,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+         $post->delete();
+        return redirect()->route( 'admin.posts.index' );
     }
 }

@@ -16,11 +16,11 @@ class CreatePostsTable extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string("author")->unique();
-            $table->date("data", 0);
+            $table->string("author");
+            $table->date("data", 0)->default('2022-03-01');
             $table->string("title");
             $table->text("text");
-            $table->string("slung")->unique();
+            $table->string("slung");
         });
     }
 
